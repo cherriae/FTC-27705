@@ -5,6 +5,8 @@ public final class Constants {
         // Motor names
         public static final String LEFT_FRONT_MOTOR = "leftFront";
         public static final String RIGHT_FRONT_MOTOR = "rightFront";
+        public static final String LEFT_BACK_MOTOR = "leftBack";
+        public static final String RIGHT_BACK_MOTOR = "rightBackt";
 
         // Drive parameters
         public static final double MAX_SPEED = 1.0;

@@ -3,29 +3,36 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.Constants.ControllerConstants;
 import org.firstinspires.ftc.teamcode.Constants.DriveConstants;
 
 public class Drivetrain {
     private final DcMotor leftFront;
     private final DcMotor rightFront;
+    private final DcMotor leftBack;
+    private final DcMotor rightBack;
     private final FtcDashboard dashboard;
 
+    private double leftFrontPower;
+    private double rightFrontPower;
+    private double leftBackPower;
+    private double rightBackPower;
+
     public Drivetrain(HardwareMap hardwareMap) {
-        // Initialize motors
+        // Initialize all four motors
         leftFront = hardwareMap.get(DcMotor.class, DriveConstants.LEFT_FRONT_MOTOR);
         rightFront = hardwareMap.get(DcMotor.class, DriveConstants.RIGHT_FRONT_MOTOR);
+        leftBack = hardwareMap.get(DcMotor.class, DriveConstants.LEFT_BACK_MOTOR);
+        rightBack = hardwareMap.get(DcMotor.class, DriveConstants.RIGHT_BACK_MOTOR);
 
         // Set motor directions
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
         rightFront.setDirection(DcMotor.Direction.FORWARD);
-
-        // Reset encoders
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        
         resetEncoders();
-
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         dashboard = FtcDashboard.getInstance();
@@ -34,58 +41,57 @@ public class Drivetrain {
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
         leftFront.setZeroPowerBehavior(behavior);
         rightFront.setZeroPowerBehavior(behavior);
+        leftBack.setZeroPowerBehavior(behavior);
+        rightBack.setZeroPowerBehavior(behavior);
     }
 
-    public void setPower(double drive, double turn) {
-        // Combine drive and turn
-        double leftPower = drive + turn;
-        double rightPower = drive - turn;
+    public void setMecanumPower(double drive, double strafe, double turn) {
+        leftFrontPower = drive + strafe + turn;
+        rightFrontPower = drive - strafe - turn;
+        leftBackPower = drive - strafe + turn;
+        rightBackPower = drive + strafe - turn;
 
-        // Normalize powers to stay within [-1, 1]
-        double max = Math.max(Math.abs(leftPower), Math.abs(rightPower));
-        if (max > 1.0) {
-            leftPower /= max;
-            rightPower /= max;
+        // Normalize powers to ensure they're within [-1, 1]
+        double maxPower = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
+                                 Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
+        
+        if (maxPower > 1.0) {
+            leftFrontPower /= maxPower;
+            rightFrontPower /= maxPower;
+            leftBackPower /= maxPower;
+            rightBackPower /= maxPower;
         }
 
-        // Apply speed limits from constants
-        leftPower = clamp(leftPower, DriveConstants.MIN_SPEED, DriveConstants.MAX_SPEED);
-        rightPower = clamp(rightPower, DriveConstants.MIN_SPEED, DriveConstants.MAX_SPEED);
+        leftFront.setPower(leftFrontPower);
+        rightFront.setPower(rightFrontPower);
+        leftBack.setPower(leftBackPower);
+        rightBack.setPower(rightBackPower);
 
-        leftFront.setPower(leftPower);
-        rightFront.setPower(rightPower);
-
-        // Send data to dashboard
+        // Dashboard telemetry
         TelemetryPacket packet = new TelemetryPacket();
-        packet.put("Left Motor Power", leftPower);
-        packet.put("Right Motor Power", rightPower);
-        packet.put("Drive Power", drive);
-        packet.put("Turn Power", turn);
-        packet.put("Left Encoder", leftFront.getCurrentPosition());
-        packet.put("Right Encoder", rightFront.getCurrentPosition());
+        packet.put("Left Front Power", leftFrontPower);
+        packet.put("Right Front Power", rightFrontPower);
+        packet.put("Left Back Power", leftBackPower);
+        packet.put("Right Back Power", rightBackPower);
         dashboard.sendTelemetryPacket(packet);
     }
 
-    public double clamp(double value, double min, double max) {
-        return Math.min(Math.max(value, min), max);
-    }
+    //to decelerate the motors to zero
 
     public void stop() {
-        setPower(0, 0);
-    }
 
-    public int getLeftPosition() {
-        return leftFront.getCurrentPosition();
-    }
-
-    public int getRightPosition() {
-        return rightFront.getCurrentPosition();
+        setMecanumPower(0, 0, 0);
     }
 
     public void resetEncoders() {
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
