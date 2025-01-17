@@ -79,7 +79,6 @@ public class Drivetrain {
     //to decelerate the motors to zero
 
     public void stop() {
-
         setMecanumPower(0, 0, 0);
     }
 

@@ -6,7 +6,7 @@ public final class Constants {
         public static final String LEFT_FRONT_MOTOR = "leftFront";
         public static final String RIGHT_FRONT_MOTOR = "rightFront";
         public static final String LEFT_BACK_MOTOR = "leftBack";
-        public static final String RIGHT_BACK_MOTOR = "rightBackt";
+        public static final String RIGHT_BACK_MOTOR = "rightBack";
 
         // Drive parameters
         public static final double MAX_SPEED = 1.0;
