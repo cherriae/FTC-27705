@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants.DriveConstants;
 
 public class Drivetrain {
@@ -82,6 +83,13 @@ public class Drivetrain {
         setMecanumPower(0, 0, 0);
     }
 
+//    public void test(){
+//        leftFront.setTargetPosition(360);
+//        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        leftFront.setPower(.1);
+//
+//    }
+
     public void resetEncoders() {
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -92,5 +100,21 @@ public class Drivetrain {
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
+
+    public void MotorTelemtry(Telemetry telemetry) {
+        telemetry.addData("\nLeft Front Motor", leftFront.getCurrentPosition());
+        telemetry.addData("\nLeft Back Motor", leftBack.getCurrentPosition());
+        telemetry.addData("\nRight Front Motor", rightFront.getCurrentPosition());
+        telemetry.addData("\nRight Back Motor", rightBack.getCurrentPosition());
+
+    }
+
+    public DcMotor getLeftFront () {return leftFront;}
+    public DcMotor getLeftBack () {return leftBack;}
+
+    public DcMotor getRightFront () {return rightFront;}
+
+    public DcMotor getRightBack () {return  rightBack;}
 }

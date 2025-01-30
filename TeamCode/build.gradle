@@ -27,10 +27,10 @@ repositories {
     maven {
         url = 'https://maven.brott.dev/'
     }
-    
+
     // Add OpenFTC repository
-    maven { 
-        url = 'https://maven.openftc.org' 
+    maven {
+        url = 'https://maven.openftc.org'
     }
 }
 
@@ -39,7 +39,7 @@ dependencies {
     implementation project(':RoadRunner')
 
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.16'
-    
+
     // Add EasyOpenCV and AprilTag dependencies
     implementation 'org.openftc:easyopencv:1.7.0'
     implementation 'org.openftc:apriltag:2.0.0'
